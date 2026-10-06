@@ -1,417 +1,125 @@
 <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>&Dstrok;&#x1eb7;c t&#x1ea3;&colon; H&#x1ec7; th&#x1ed1;ng &dstrok;&#x1eb7;t l&#x1ecb;ch h&#x1ecd;c CLB V&otilde;</title>
-            <style>
-/* From extension vscode.github */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-.vscode-dark img[src$=\#gh-light-mode-only],
-.vscode-light img[src$=\#gh-dark-mode-only],
-.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
-.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
-	display: none;
-}
-
-</style>
-            
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hệ thống đặt lịch CLB Võ – Tài liệu dự án</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
-                font-size: 14px;
-                line-height: 1.6;
-            }
-        </style>
-        <style>
-.task-list-item {
-    list-style-type: none;
+:root{
+  --bg:#eef1ec; --card:#ffffff; --ink:#1b2a2f; --muted:#5a6b70; --line:#d3dad3;
+  --banner1:#1b2a2f; --banner2:#34505a;
 }
-
-.task-list-item-checkbox {
-    margin-left: -20px;
-    vertical-align: middle;
-    pointer-events: none;
+@media (prefers-color-scheme:dark){
+  :root{--bg:#121a1d; --card:#1b272b; --ink:#e7eeea; --muted:#9bacaf; --line:#2e3e43;
+  --banner1:#0b1214; --banner2:#24404a;}
 }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 56px}
+h1{text-align:center;font-size:1.7rem;margin:0 0 6px}
+.sub{text-align:center;color:var(--muted);margin:0 0 28px}
+.banner{height:200px;border-radius:12px;background:linear-gradient(135deg,var(--banner1),var(--banner2));
+  display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.banner span{font-size:9rem;color:rgba(255,255,255,.12);font-weight:700;line-height:1}
+.banner b{position:absolute;color:#fff;font-size:1.15rem;font-weight:600;letter-spacing:.02em}
+.banner img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.overview{max-width:640px;margin:28px auto 36px;text-align:center}
+h2{font-size:1.05rem;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.doc{display:flex;gap:12px;align-items:center;padding:14px 16px;background:var(--card);
+  border:1px solid var(--line);border-left:6px solid var(--c);border-radius:6px;
+  color:inherit;text-decoration:none;transition:transform .15s,border-color .15s}
+a.doc:hover{transform:translateY(-2px);border-color:var(--c)}
+a.doc:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.doc .ic{font-size:1.5rem}
+.doc strong{display:block;font-size:.95rem}
+.doc small{color:var(--muted);font-size:.8rem}
+.doc.soon{opacity:.55;border-left-color:var(--muted);cursor:not-allowed}
+.tag{margin-left:auto;font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted);white-space:nowrap}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:40px}
+@media (prefers-reduced-motion:reduce){.doc{transition:none}}
 </style>
-<style>
-:root {
-  --color-note: #0969da;
-  --color-tip: #1a7f37;
-  --color-warning: #9a6700;
-  --color-severe: #bc4c00;
-  --color-caution: #d1242f;
-  --color-important: #8250df;
-}
+</head>
+<body>
+<main class="wrap">
 
-</style>
-<style>
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-note: #2f81f7;
-    --color-tip: #3fb950;
-    --color-warning: #d29922;
-    --color-severe: #db6d28;
-    --color-caution: #f85149;
-    --color-important: #a371f7;
-  }
-}
+  <h1>Tài liệu dự án</h1>
 
-</style>
-<style>
-.markdown-alert {
-  padding: 0.5rem 1rem;
-  margin-bottom: 16px;
-  color: inherit;
-  border-left: .25em solid #888;
-}
+  <!-- Muốn dùng ảnh banner riêng: thêm <img src="images/banner.png" alt=""> vào trong .banner -->
+  <div class="banner" role="img" aria-label="Banner dự án">
+    <span>道</span><b><h1>🥋 Hệ thống đặt lịch CLB Võ</h1> </b>
+  </div>
 
-.markdown-alert>:first-child {
-  margin-top: 0
-}
+  <p class="overview">
+    <strong>Tổng quan:</strong> Hệ thống giúp học viên đặt chỗ vào lớp Basic hoặc Advanced
+    theo trình độ, giúp giáo viên nắm sĩ số từng ca và giúp chủ CLB kiểm soát sức chứa lớp học.
+  </p>
 
-.markdown-alert>:last-child {
-  margin-bottom: 0
-}
+  <div id="app"></div>
 
-.markdown-alert .markdown-alert-title {
-  display: flex;
-  font-weight: 500;
-  align-items: center;
-  line-height: 1
-}
+  <footer>Cập nhật lần cuối: <span id="updated">--</span></footer>
+</main>
 
-.markdown-alert .markdown-alert-title .octicon {
-  margin-right: 0.5rem;
-  display: inline-block;
-  overflow: visible !important;
-  vertical-align: text-bottom;
-  fill: currentColor;
-}
+<script>
+/* ====== CHỈNH Ở ĐÂY ======
+   href: đường dẫn tới tài liệu (file trong thư mục docs/ hoặc link ngoài).
+   Để href = "" thì ô hiện "Sắp có" và không bấm được. */
+const SECTIONS = [
+  { title: "🎯 Khởi tạo dự án", items: [
+    { name: "Vision & Scope (BRD)",  desc: "Mục tiêu, phạm vi, giá trị mang lại",  icon: "🎯", color: "#6b4fa0", href: "" },
+    { name: "Stakeholder Analysis",  desc: "Ai liên quan, ai quyết định",            icon: "👥", color: "#6b4fa0", href: "" },
+    { name: "Thuật ngữ (Glossary)",  desc: "Basic, Advanced, ca, sức chứa...",       icon: "📖", color: "#6b4fa0", href: "" },
+  ]},
+  { title: "🔍 Phân tích", items: [
+    { name: "Quy trình nghiệp vụ",   desc: "As-Is / To-Be, luồng đặt lịch",          icon: "🔀", color: "#00897b", href: "docs/test-plan.html" },
+    { name: "Use Case",              desc: "Sơ đồ và đặc tả use case",               icon: "🧩", color: "#00897b", href: "" },
+    { name: "Business Rules",        desc: "Danh mục quy tắc nghiệp vụ (BR-xx)",     icon: "⚖️", color: "#00897b", href: "" },
+    { name: "Wireframe / Mockup",    desc: "Thiết kế giao diện (link Figma)",        icon: "🖼️", color: "#00897b", href: "docs/test-plan.html" },
+    { name: "ERD & Data Dictionary", desc: "Mô hình dữ liệu",                        icon: "🗄️", color: "#00897b", href: "" },
+  ]},
+  { title: "📋 Yêu cầu", items: [
+    { name: "Đặc tả (SRS)",          desc: "Quy tắc nghiệp vụ, ma trận lịch",        icon: "📄", color: "#2f6fa3", href: "https://nqnhung.github.io/dojo-booking-system" },
+    { name: "User Stories",          desc: "Câu chuyện người dùng, tiêu chí chấp nhận", icon: "📝", color: "#d9822b", href: "" },
+    { name: "Traceability Matrix",   desc: "Liên kết yêu cầu ↔ test case",           icon: "🔗", color: "#2f6fa3", href: "" },
+  ]},
+  { title: "🧪 Kiểm thử", items: [
+    { name: "Test Plan",             desc: "Kế hoạch kiểm thử",                      icon: "📒", color: "#2e8b57", href: "docs/test-plan.html" },
+    { name: "Test Cases – Module 1", desc: "Quản lý học viên & level",               icon: "✅", color: "#2f6fa3", href: "docs/testcases-1.html" },
+    { name: "Test Cases – Module 2", desc: "Quản lý lớp & lịch",                     icon: "✅", color: "#2f6fa3", href: "" },
+    { name: "Test Cases – Module 3", desc: "Đặt và hủy chỗ",                         icon: "✅", color: "#2f6fa3", href: "" },
+    { name: "UAT Plan",              desc: "Kế hoạch nghiệm thu cùng khách",         icon: "🤝", color: "#2e8b57", href: "docs/test-plan.html" },
+    { name: "Bug Report",            desc: "Danh sách lỗi",                          icon: "🪲", color: "#b5483a", href: "" },
+  ]},
+  { title: "🗂️ Quản lý dự án", items: [
+    { name: "Q&A Log",               desc: "Câu hỏi mở và câu trả lời của khách",    icon: "❓", color: "#c0392b", href: "docs/test-plan.html" },
+    { name: "Biên bản họp",          desc: "Meeting minutes",                        icon: "🗒️", color: "#c0392b", href: "" },
+    { name: "Change Request Log",    desc: "Yêu cầu thay đổi và quyết định",         icon: "🔄", color: "#c0392b", href: "" },
+    { name: "Risk & Assumption Log", desc: "Rủi ro, giả định, ràng buộc",            icon: "⚠️", color: "#c0392b", href: "" },
+  ]},
+  { title: "📦 Bàn giao", items: [
+    { name: "Hướng dẫn sử dụng",     desc: "Cho Admin, giáo viên, học viên",         icon: "📘", color: "#7a6a2f", href: "docs/test-plan.html" },
+    { name: "Release Notes",         desc: "Các phiên bản đã phát hành",             icon: "🚀", color: "#7a6a2f", href: "docs/test-plan.html" },
+  ]},
+];
+document.getElementById("updated").textContent = new Date(document.lastModified).toLocaleDateString("vi-VN");
 
-.markdown-alert.markdown-alert-note {
-  border-left-color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-important {
-  border-left-color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-important .markdown-alert-title {
-  color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-warning {
-  border-left-color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-tip {
-  border-left-color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-caution {
-  border-left-color: var(--color-caution);
-}
-
-.markdown-alert.markdown-alert-caution .markdown-alert-title {
-  color: var(--color-caution);
-}
-
-</style>
-        
-        </head>
-        <body class="vscode-body vscode-light">
-            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
-				<h1 id="đặc-tả-hệ-thống-đặt-lịch-học-clb-võ">Đặc tả: Hệ thống đặt lịch học CLB Võ</h1>
-<p><strong>Phiên bản:</strong> 0.1 (Draft) · <strong>Trạng thái:</strong> Chờ khách xác nhận các mục đánh dấu ⚠️</p>
-<hr>
-<h2 id="1-mục-tiêu--phạm-vi">1. Mục tiêu &amp; phạm vi</h2>
-<p><strong>Mục tiêu:</strong> Giúp học viên tự đặt chỗ vào đúng lớp theo trình độ, giúp giáo viên nắm sĩ số từng ca và giảm sắp xếp thủ công.</p>
-<p><strong>Trong phạm vi:</strong> quản lý lớp/ca, phân loại học viên (Basic/Advanced), đặt và hủy chỗ, kiểm soát sức chứa, xem danh sách lớp.</p>
-<p><strong>Ngoài phạm vi (v0.1):</strong> thanh toán/học phí, điểm danh, thi đai, báo cáo nâng cao, thông báo tự động. <span style="color: red;">⚠️ Cần xác nhận với khách.</span></p>
-<hr>
-<h2 id="2-vai-trò">2. Vai trò</h2>
-<table>
-<thead>
-<tr>
-<th>Vai trò</th>
-<th>Quyền chính</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Học viên</td>
-<td>Xem lịch, đặt/hủy chỗ trong các lớp được phép</td>
-</tr>
-<tr>
-<td>Giáo viên</td>
-<td>Xem danh sách học viên, quản lý học viên, lịch, level, lớp</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="3-quy-tắc-nghiệp-vụ">3. Quy tắc nghiệp vụ</h2>
-<h3 id="31-level-học-viên">3.1 Level học viên</h3>
-<table>
-<thead>
-<tr>
-<th>Level</th>
-<th>Điều kiện</th>
-<th>Ghi chú</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Basic</strong></td>
-<td>Học viên mới, thời gian tập dưới 7–8 tháng</td>
-<td>Gộp Newbie + Intermediate</td>
-</tr>
-<tr>
-<td><strong>Advanced</strong></td>
-<td>Thời gian tập từ 7–8 tháng trở lên</td>
-<td>Giáo viên duyệt</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>BR-01:</strong> Học viên mới đăng ký luôn mặc định là Basic.</li>
-<li><strong>BR-02:</strong> Thời gian tập tính từ <strong>ngày bắt đầu tập</strong> (Giáo viên nhập khi tạo học viên).</li>
-<li><strong>BR-03:</strong> Khi đủ ngưỡng, hệ thống <strong>nhắc Giáo viên</strong> nâng level;   Hoặc khách muốn tự động nâng? ⚠️ Giáo viên xác nhận (không tự động nâng).</li>
-<li><strong>BR-04:</strong> Chỉ Giáo viên được đổi level thủ công (nâng hoặc hạ).</li>
-</ul>
-<h3 id="32-loại-lớp-và-lịch-học">3.2 Loại lớp và lịch học</h3>
-<p>Lịch dạy từ <strong>Thứ 2 đến Thứ 6</strong>, mỗi ngày 3 ca. Không có lớp Thứ 7 và Chủ nhật.</p>
-<table>
-<thead>
-<tr>
-<th>Ca</th>
-<th>Giờ</th>
-<th>T2</th>
-<th>T3</th>
-<th>T4</th>
-<th>T5</th>
-<th>T6</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Sáng</td>
-<td>08:00–10:00</td>
-<td>Basic</td>
-<td>Basic</td>
-<td>Basic</td>
-<td>Basic</td>
-<td>Basic</td>
-</tr>
-<tr>
-<td>Chiều</td>
-<td>17:00–19:00</td>
-<td>Basic</td>
-<td>Basic</td>
-<td>Basic</td>
-<td>Basic</td>
-<td>Basic</td>
-</tr>
-<tr>
-<td>Tối</td>
-<td>19:30–21:00</td>
-<td><strong>Basic + Advanced</strong> <br>(2 lớp song song)</td>
-<td>Advanced</td>
-<td>Basic</td>
-<td>Advanced</td>
-<td>Basic</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>BR-05:</strong> Tối Thứ 2 có <strong>2 lớp chạy song song</strong> (1 Basic, 1 Advanced), có 2 giáo viên <br> → Hệ thống phải cho phép 2 lớp cùng khung giờ.</li>
-<li><strong>BR-06:</strong> Các ca còn lại mỗi ca có 1 lớp, 1 giáo viên.</li>
-<li><strong>BR-07:</strong> Lịch tuần lặp lại cố định. Giáo viên có thể sửa/hủy từng buổi cụ thể (xem mục 5).</li>
-</ul>
-<h3 id="33-sức-chứa">3.3 Sức chứa</h3>
-<table>
-<thead>
-<tr>
-<th>Ca</th>
-<th>Địa điểm</th>
-<th>Sức chứa tối đa</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Sáng, Chiều</td>
-<td>Trong nhà</td>
-<td><strong>8 học viên/lớp</strong></td>
-</tr>
-<tr>
-<td>Tối</td>
-<td>Sân thượng</td>
-<td><strong>10 học viên/lớp</strong></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>BR-08:</strong> Khi đủ sĩ số tối đa, lớp hiển thị &quot;Đã đầy&quot; và không nhận đặt thêm.</li>
-<li><strong>BR-09:</strong> Sức chứa tính theo <strong>từng lớp</strong>.</li>
-<li><strong>BR-10:</strong> Giáo viên có thể chỉnh sức chứa từng lớp (ví dụ khi thời tiết xấu không dùng được sân thượng).</li>
-</ul>
-<h3 id="34-quyền-đặt-lịch">3.4 Quyền đặt lịch</h3>
-<table>
-<thead>
-<tr>
-<th>Level học viên</th>
-<th>Lớp Basic</th>
-<th>Lớp Advanced</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Basic</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>Advanced</td>
-<td>✅ ⚠️</td>
-<td>✅</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>BR-11:</strong> Học viên Basic chỉ thấy/đặt được lớp Basic. Lớp Advanced hiển thị &quot;Dành cho học viên Advanced&quot; (không cho đặt).</li>
-<li><strong>BR-12:</strong> Mỗi học viên không được đặt 2 lớp trùng khung giờ.</li>
-</ul>
-<hr>
-<h2 id="4-yêu-cầu-chức-năng-user-stories">4. Yêu cầu chức năng (User stories)</h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>User story</th>
-<th>Tiêu chí chấp nhận</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>US-01</td>
-<td>Là học viên, tôi muốn xem lịch tuần để biết lớp nào tôi được đặt.</td>
-<td>Hiển thị lịch T2–T6 theo ca; lớp không phù hợp level bị làm mờ kèm lý do; mỗi lớp hiển thị số chỗ còn lại (ví dụ 5/8).</td>
-</tr>
-<tr>
-<td>US-02</td>
-<td>Là học viên, tôi muốn đặt chỗ vào một lớp còn trống.</td>
-<td>Đặt thành công khi đúng level, còn chỗ, không trùng giờ; sĩ số tăng ngay; nhận xác nhận trên màn hình.</td>
-</tr>
-<tr>
-<td>US-03</td>
-<td>Là học viên, tôi muốn hủy chỗ đã đặt.</td>
-<td>Hủy được trước hạn quy định ⚠️; chỗ được trả lại cho lớp.</td>
-</tr>
-<tr>
-<td>US-04</td>
-<td>Là giáo viên, tôi muốn xem danh sách học viên của ca mình dạy.</td>
-<td>Hiển thị tên, level, số lượng; tách được tỷ lệ Basic/Advanced nếu lớp có cả hai.</td>
-</tr>
-<tr>
-<td>US-05</td>
-<td>Là giáo viên, tôi muốn quản lý học viên và level.</td>
-<td>Thêm/sửa học viên, nhập ngày bắt đầu tập; xem danh sách học viên đến ngưỡng nâng level; nâng/hạ level có ghi lịch sử.</td>
-</tr>
-<tr>
-<td>US-06</td>
-<td>Là giáo viên, tôi muốn quản lý lớp và giáo viên.</td>
-<td>Gán giáo viên cho từng lớp; sửa sức chứa; hủy hoặc đổi từng buổi cụ thể.</td>
-</tr>
-<tr>
-<td>US-07</td>
-<td>Là giáo viên, tôi muốn đặt/hủy chỗ hộ học viên.</td>
-<td>Admin đặt được kể cả khi học viên không dùng hệ thống; vẫn kiểm tra level và sức chứa, trừ khi Admin chọn ghi đè (có ghi log).</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="5-trường-hợp-đặc-biệt-edge-cases">5. Trường hợp đặc biệt (Edge cases)</h2>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Tình huống</th>
-<th>Xử lý đề xuất</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>E-01</td>
-<td>Học viên đặt trùng ca trong cùng 1 ngày (hoặc đặt 2 ca chồng giờ nhau)</td>
-<td>Hệ thống chặn ngay khi bấm và báo lỗi: &quot;Bạn đã có lịch tập ở ca [Giờ] trong ngày hôm nay&quot;</td>
-</tr>
-<tr>
-<td>E-02</td>
-<td>Hai học viên đặt chỗ cuối cùng cùng lúc</td>
-<td>Hệ thống chỉ chấp nhận 1 người, người kia nhận thông báo &quot;Lớp đã đầy&quot;.</td>
-</tr>
-<tr>
-<td>E-03</td>
-<td>Lớp bị hủy (giáo viên nghỉ, mưa, lễ)</td>
-<td>Giáo viên hủy buổi; toàn bộ booking của buổi đó bị hủy; học viên được thông báo. ⚠️ Có học bù không?</td>
-</tr>
-<tr>
-<td>E-04</td>
-<td>Tối Thứ 2 thiếu 1 trong 2 giáo viên</td>
-<td>Giáo viên có thể hủy hoặc gộp lớp; hệ thống không tự gộp.</td>
-</tr>
-<tr>
-<td>E-05</td>
-<td>Hết sức chứa</td>
-<td>Không có danh sách chờ ở v0.1. ⚠️ Khách có cần danh sách chờ?</td>
-</tr>
-<tr>
-<td>E-06</td>
-<td>Học viên không đến dù đã đặt</td>
-<td>Chưa xử lý ở v0.1 ⚠️ (không có điểm danh).</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="6-yêu-cầu-phi-chức-năng">6. Yêu cầu phi chức năng</h2>
-<ul>
-<li>Dùng được trên điện thoại (học viên chủ yếu đặt lịch bằng mobile). ⚠️ Nền tảng: web, app hay Zalo mini app?</li>
-<li>Đặt chỗ phải chống trùng/vượt sức chứa khi nhiều người thao tác đồng thời.</li>
-<li>Mọi thay đổi level, booking do Giáo viên thực hiện đều có nhật ký (ai, khi nào, thay đổi gì).</li>
-</ul>
-<hr>
-<h2 id="7-danh-sách-câu-hỏi-còn-mở">7. Danh sách câu hỏi còn mở</h2>
-<ol>
-<li>Giờ chính xác của 3 ca (đang giả định 08:00–10:00, 17:00–19:00, 19:30–21:00).</li>
-<li>Ngưỡng lên Advanced: 7 hay 8 tháng, và Giáo viên có phải duyệt không?</li>
-<li>Học viên Advanced có được đặt lớp Basic không? Có chiếm chỗ không?</li>
-<li>Tối Thứ 2: sức chứa 10 người cho mỗi lớp hay chung sân thượng?</li>
-<li>Thời hạn đặt trước và hạn chót hủy (ví dụ đóng đặt trước giờ học 2 tiếng).</li>
-<li>Giới hạn số buổi mỗi học viên được đặt trong tuần/ngày.</li>
-<li>Có danh sách chờ, học bù, học thử không?</li>
-<li>Học viên đăng nhập bằng cách nào (số điện thoại, Zalo, tài khoản do Giáo viên cấp)?</li>
-<li>Quy mô: số học viên hiện tại, số cơ sở, và dữ liệu hiện có (Excel/Zalo) có cần nhập vào hệ thống không?</li>
-<li>&quot;Tối ưu lịch&quot; khách kỳ vọng thêm gì ngoài đặt lịch theo quy tắc (gợi ý ca, cảnh báo lớp ít người, báo cáo tỷ lệ lấp đầy)?</li>
-</ol>
-
-            
-            
-        </body>
-        </html>
+const app = document.getElementById("app");
+SECTIONS.forEach(s => {
+  const h = document.createElement("h2"); h.textContent = s.title; app.appendChild(h);
+  const g = document.createElement("div"); g.className = "grid";
+  s.items.forEach(i => {
+    const el = document.createElement(i.href ? "a" : "div");
+    el.className = "doc" + (i.href ? "" : " soon");
+    el.style.setProperty("--c", i.color);
+    if (i.href) { el.href = i.href; el.target = "_blank"; el.rel = "noopener"; }
+    el.innerHTML = `<span class="ic">${i.icon}</span><span><strong>${i.name}</strong><small>${i.desc}</small></span>` +
+                   (i.href ? "" : `<span class="tag">Sắp có</span>`);
+    g.appendChild(el);
+  });
+  app.appendChild(g);
+});
+</script>
+</body>
+</html>
