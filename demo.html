@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLB Võ Thuật - Hệ Thống Đặt Lịch Học (Demo)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- TOP BAR: ROLE SWITCHER (Dành riêng cho Demo) -->
+  <div class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 px-4 py-2.5 shadow-md">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Logo CLB -->
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">🥋</span>
+        <div>
+          <h1 class="font-bold text-sm tracking-wide text-white leading-tight">CLB VÕ THUẬT</h1>
+          <p class="text-[11px] text-amber-400 font-medium">Demo Of Nguyen Quynh Nhung</p>
+        </div>
+      </div>
+
+      <!-- Giả lập đăng nhập / Chọn vai trò -->
+      <div class="flex items-center gap-2 bg-slate-800 p-1.5 rounded-lg border border-slate-700 text-xs">
+        <span class="text-slate-400 pl-1 font-medium hidden sm:inline">Đang xem với vai trò:</span>
+        <select id="userSelector" onchange="changeCurrentUser(this.value)" class="bg-slate-900 text-amber-300 font-semibold rounded px-2.5 py-1 border border-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer">
+          <option value="user_basic">👤 Học viên 1: Lê Tuấn (Level: Basic - 3 tháng)</option>
+          <option value="user_adv">🥋 Học viên 2: Trần Thảo (Level: Advanced - 10 tháng)</option>
+          <option value="admin">👨‍🏫 Quản trị viên / Thầy Vũ (Giáo viên)</option>
+        </select>
+      </div>
+
+      <!-- Nút điều hướng phụ -->
+      <div class="flex items-center gap-2 text-xs">
+        <a href="SRS.html" target="_blank" class="text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded border border-slate-700 transition">
+          📄 Xem đặc tả (SRS)
+        </a>
+        <button onclick="resetData()" title="Khôi phục lại dữ liệu mẫu ban đầu" class="text-slate-400 hover:text-rose-400 p-1.5 rounded hover:bg-slate-800 transition">
+          🔄 Reset dữ liệu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+
+    <!-- USER INFO BANNER (Khi là Học viên) -->
+    <div id="studentBanner" class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div id="userAvatar" class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-lg shadow-inner">
+          LT
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 id="userName" class="font-bold text-base text-slate-900">Lê Tuấn</h2>
+            <span id="userBadge" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+              Basic
+            </span>
+          </div>
+          <p id="userDesc" class="text-xs text-slate-500 mt-0.5">
+            Thời gian tập: 3 tháng · Quyền: Được đặt các lớp Basic
+          </p>
+        </div>
+      </div>
+
+      <!-- Thống kê cá nhân -->
+      <div class="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 text-xs">
+        <div>
+          <span class="text-slate-500 block">Số ca đã đặt tuần này:</span>
+          <span id="myBookingsCount" class="font-bold text-blue-600 text-sm">0 ca</span>
+        </div>
+        <button onclick="switchTab('my-schedule')" class="text-blue-600 hover:text-blue-800 font-semibold underline ml-2">
+          Xem lịch của tôi →
+        </button>
+      </div>
+    </div>
+
+    <!-- ADMIN ACTION BANNER (Khi là Admin) -->
+    <div id="adminBanner" class="hidden bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-xl p-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xl">👨‍🏫</span>
+          <h2 class="font-bold text-base text-amber-300">Bảng Quản Trị Giáo Viên / Chủ CLB</h2>
+        </div>
+        <p class="text-xs text-slate-300 mt-0.5">
+          Quản lý sĩ số lớp, điểm danh học viên và xử lý chuyển lớp khẩn cấp khi mưa bão ở sân thượng.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleRainAlert()" id="btnWeather" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 transition">
+          <span>🌧️</span> Mô phỏng Mưa Sân Thượng
+        </button>
+      </div>
+    </div>
+
+    <!-- CẢNH BÁO THỜI TIẾT MƯA BÃO (Ẩn/Hiện) -->
+    <div id="weatherAlertBox" class="hidden mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm flex items-start gap-3 shadow-sm">
+      <span class="text-2xl">⚠️</span>
+      <div>
+        <h4 class="font-bold text-amber-950">Thông báo thời tiết khẩn cấp:</h4>
+        <p class="text-xs text-amber-800 mt-0.5">
+          Trời đang mưa to! Tất cả các ca tối ở Sân thượng được tự động chuyển vào Trong nhà. Sức chứa tối đa tạm thời được điều chỉnh để đảm bảo an toàn cho học viên.
+        </p>
+      </div>
+    </div>
+
+    <!-- TABS NAVIGATION -->
+    <div class="flex border-b border-slate-200 mb-6 gap-2">
+      <button onclick="switchTab('matrix')" id="tabBtnMatrix" class="px-4 py-2.5 font-bold text-sm border-b-2 border-blue-600 text-blue-600 flex items-center gap-2">
+        📅 Ma Trận Lịch Tuần
+      </button>
+      <button onclick="switchTab('my-schedule')" id="tabBtnMySchedule" class="px-4 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2">
+        🎟️ Lịch Của Tôi (<span id="tabCount">0</span>)
+      </button>
+      <button onclick="switchTab('admin-students')" id="tabBtnStudents" class="hidden px-4 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2">
+        👥 Quản Lý Học Viên & Cấp Độ
+      </button>
+    </div>
+
+    <!-- TAB 1: MA TRẬN LỊCH TUẦN -->
+    <div id="tabMatrix" class="space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 pb-1">
+        <p class="font-medium">
+          💡 Chọn ca học phù hợp với trình độ để đặt chỗ. Không có lớp vào Thứ 7 và Chủ nhật.
+        </p>
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Lớp Basic</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span> Lớp Advanced</span>
+        </div>
+      </div>
+
+      <!-- BẢNG LỊCH TUẦN (Responsive Table) -->
+      <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200 custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[750px]">
+          <thead>
+            <tr class="bg-slate-100/80 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+              <th class="p-3.5 w-28 text-center bg-slate-200/60">Ca học / Giờ</th>
+              <th class="p-3.5 text-center">Thứ 2</th>
+              <th class="p-3.5 text-center">Thứ 3</th>
+              <th class="p-3.5 text-center">Thứ 4</th>
+              <th class="p-3.5 text-center">Thứ 5</th>
+              <th class="p-3.5 text-center">Thứ 6</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody" class="divide-y divide-slate-100 text-sm">
+            <!-- Render động bằng JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: LỊCH CỦA TÔI -->
+    <div id="tabMySchedule" class="hidden">
+      <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-base text-slate-900 mb-3">Danh sách các ca học bạn đã đặt</h3>
+        <div id="myScheduleList" class="space-y-3">
+          <!-- Render danh sách ca đã đặt -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: QUẢN LÝ HỌC VIÊN (Dành cho Admin) -->
+    <div id="tabAdminStudents" class="hidden">
+      <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Danh sách học viên CLB & Quản lý Level</h3>
+            <p class="text-xs text-slate-500">Mới vào mặc định Basic. Khi đạt 7–8 tháng trở lên, Giáo viên có quyền duyệt lên Advanced (BR-03, BR-04).</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-600 bg-slate-50 font-semibold">
+                <th class="p-2.5">Học viên</th>
+                <th class="p-2.5">Ngày bắt đầu</th>
+                <th class="p-2.5">Thời gian tập</th>
+                <th class="p-2.5">Cấp độ hiện tại</th>
+                <th class="p-2.5 text-center">Thao tác duyệt Level</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody" class="divide-y divide-slate-100">
+              <!-- Render động -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: XEM DANH SÁCH HỌC VIÊN CỦA CA (Khi Admin click vào ca) -->
+  <div id="classModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+        <div>
+          <h3 id="modalClassTitle" class="font-bold text-slate-900 text-base">Chi tiết ca học</h3>
+          <p id="modalClassSub" class="text-xs text-slate-500">Thứ ... · Ca ...</p>
+        </div>
+        <button onclick="closeClassModal()" class="text-slate-400 hover:text-slate-600 p-1 text-lg leading-none">&times;</button>
+      </div>
+      
+      <div class="mb-4">
+        <div class="flex justify-between items-center text-xs text-slate-600 mb-2">
+          <span>Danh sách học viên đã đặt chỗ (<span id="modalStudentCount" class="font-bold text-blue-600">0</span>):</span>
+          <span id="modalCapacityBadge" class="px-2 py-0.5 rounded text-[11px] bg-slate-100 text-slate-700 font-medium">Sức chứa: 8</span>
+        </div>
+        <div id="modalStudentList" class="space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar p-1">
+          <!-- Render danh sách học viên -->
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button onclick="closeClassModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-xl z-50 hidden transition-all duration-300 flex items-center gap-2">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">Thao tác thành công!</span>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
+    <p>🥋 2026 Hệ thống đặt lịch học CLB Võ. Phát triển bởi Nguyen Quynh Nhung (Dựa trên SRS v0.1)</p>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // DỮ LIỆU KHỞI TẠO MẪU
+    const INITIAL_DATA = {
+      currentUser: "user_basic", // "user_basic", "user_adv", "admin"
+      rainMode: false,
+      students: [
+        { id: "user_basic", name: "Lê Tuấn", startMonth: "11/2025", duration: "3 tháng", level: "Basic", avatar: "LT" },
+        { id: "user_adv", name: "Trần Thảo", startMonth: "04/2025", duration: "10 tháng", level: "Advanced", avatar: "TT" },
+        { id: "u3", name: "Hoàng Minh", startMonth: "09/2025", duration: "5 tháng", level: "Basic", avatar: "HM" },
+        { id: "u4", name: "Phạm Thắng", startMonth: "02/2025", duration: "12 tháng", level: "Advanced", avatar: "PT" },
+        { id: "u5", name: "Ngô Lan", startMonth: "06/2025", duration: "8 tháng", level: "Basic", avatar: "NL" } // Đủ điều kiện nâng level
+      ],
+      // Cấu hình các ca học từ T2 đến T6
+      // id: day_shift (ví dụ: mon_morning)
+      classes: {
+        // Thứ 2
+        "mon_morning": { id: "mon_morning", day: "Thứ 2", shift: "Sáng", time: "08:00 - 10:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: ["u3", "u5"] },
+        "mon_afternoon": { id: "mon_afternoon", day: "Thứ 2", shift: "Chiều", time: "17:00 - 19:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: ["u3"] },
+        "mon_night_basic": { id: "mon_night_basic", day: "Thứ 2", shift: "Tối", time: "19:30 - 21:00", level: "Basic", location: "Sân thượng", max: 10, teacher: "Thầy Vũ", bookings: ["u3", "u5"], note: "Lớp song song 1" },
+        "mon_night_adv": { id: "mon_night_adv", day: "Thứ 2", shift: "Tối", time: "19:30 - 21:00", level: "Advanced", location: "Sân thượng", max: 10, teacher: "Cô Kiều", bookings: ["user_adv", "u4"], note: "Lớp song song 2" },
+        
+        // Thứ 3
+        "tue_morning": { id: "tue_morning", day: "Thứ 3", shift: "Sáng", time: "08:00 - 10:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "TThầy Vũ", bookings: [] },
+        "tue_afternoon": { id: "tue_afternoon", day: "Thứ 3", shift: "Chiều", time: "17:00 - 19:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: ["u3"] },
+        "tue_night": { id: "tue_night", day: "Thứ 3", shift: "Tối", time: "19:30 - 21:00", level: "Advanced", location: "Sân thượng", max: 10, teacher: "Thầy Vũ", bookings: ["user_adv"] },
+
+        // Thứ 4
+        "wed_morning": { id: "wed_morning", day: "Thứ 4", shift: "Sáng", time: "08:00 - 10:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: ["1", "2", "3", "4", "5", "6", "7"] },
+        "wed_afternoon": { id: "wed_afternoon", day: "Thứ 4", shift: "Chiều", time: "17:00 - 19:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: ["u5"] },
+        "wed_night": { id: "wed_night", day: "Thứ 4", shift: "Tối", time: "19:30 - 21:00", level: "Basic", location: "Sân thượng", max: 10, teacher: "Thầy Vũ", bookings: [] },
+
+        // Thứ 5
+        "thu_morning": { id: "thu_morning", day: "Thứ 5", shift: "Sáng", time: "08:00 - 10:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: ["1", "2", "3", "4", "5", "6", "7", "8"] },
+        "thu_afternoon": { id: "thu_afternoon", day: "Thứ 5", shift: "Chiều", time: "17:00 - 19:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: [] },
+        "thu_night": { id: "thu_night", day: "Thứ 5", shift: "Tối", time: "19:30 - 21:00", level: "Advanced", location: "Sân thượng", max: 10, teacher: "Thầy Vũ", bookings: ["u4"] },
+
+        // Thứ 6
+        "fri_morning": { id: "fri_morning", day: "Thứ 6", shift: "Sáng", time: "08:00 - 10:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: [] },
+        "fri_afternoon": { id: "fri_afternoon", day: "Thứ 6", shift: "Chiều", time: "17:00 - 19:00", level: "Basic", location: "Trong nhà", max: 8, teacher: "Thầy Vũ", bookings: [] },
+        "fri_night": { id: "fri_night", day: "Thứ 6", shift: "Tối", time: "19:30 - 21:00", level: "Basic", location: "Sân thượng", max: 10, teacher: "Thầy Vũ", bookings: ["u3", "u5"] }
+      }
+    };
+
+    // Tải dữ liệu từ LocalStorage hoặc gán mặc định
+    let appState = JSON.parse(localStorage.getItem('clb_vo_state')) || INITIAL_DATA;
+
+    function saveState() {
+      localStorage.setItem('clb_vo_state', JSON.stringify(appState));
+    }
+
+    function resetData() {
+      if (confirm("Khôi phục toàn bộ dữ liệu mẫu ban đầu?")) {
+        localStorage.removeItem('clb_vo_state');
+        appState = JSON.parse(JSON.stringify(INITIAL_DATA));
+        saveState();
+        renderAll();
+        showToast("Đã thiết lập lại dữ liệu mẫu!");
+      }
+    }
+
+    // Đổi người dùng hiện tại
+    function changeCurrentUser(role) {
+      appState.currentUser = role;
+      saveState();
+      renderAll();
+      showToast(`Đã chuyển sang vai trò: ${getUserDisplayName(role)}`);
+    }
+
+    function getUserDisplayName(role) {
+      if (role === 'admin') return "👨‍🏫 Thầy Vũ (Quản trị viên)";
+      const s = appState.students.find(x => x.id === role);
+      return s ? `${s.name} (${s.level})` : role;
+    }
+
+    // Toggle tab
+    let currentTab = 'matrix';
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.getElementById('tabMatrix').classList.add('hidden');
+      document.getElementById('tabMySchedule').classList.add('hidden');
+      document.getElementById('tabAdminStudents').classList.add('hidden');
+
+      document.getElementById('tabBtnMatrix').className = "px-4 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+      document.getElementById('tabBtnMySchedule').className = "px-4 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+      document.getElementById('tabBtnStudents').className = "px-4 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+
+      if (tabId === 'matrix') {
+        document.getElementById('tabMatrix').classList.remove('hidden');
+        document.getElementById('tabBtnMatrix').className = "px-4 py-2.5 font-bold text-sm border-b-2 border-blue-600 text-blue-600 flex items-center gap-2";
+      } else if (tabId === 'my-schedule') {
+        document.getElementById('tabMySchedule').classList.remove('hidden');
+        document.getElementById('tabBtnMySchedule').className = "px-4 py-2.5 font-bold text-sm border-b-2 border-blue-600 text-blue-600 flex items-center gap-2";
+      } else if (tabId === 'admin-students') {
+        document.getElementById('tabAdminStudents').classList.remove('hidden');
+        document.getElementById('tabBtnStudents').className = "px-4 py-2.5 font-bold text-sm border-b-2 border-blue-600 text-blue-600 flex items-center gap-2";
+      }
+      renderAll();
+    }
+
+    // Mô phỏng mưa sân thượng (Edge Case 06, 07)
+    function toggleRainAlert() {
+      appState.rainMode = !appState.rainMode;
+      saveState();
+      renderAll();
+      showToast(appState.rainMode ? "🌧️ Đã kích hoạt chế độ mưa sân thượng!" : "☀️ Đã tắt chế độ mưa bão!");
+    }
+
+    // ĐẶT CHỖ (Booking logic)
+    function bookClass(classId) {
+      const cls = appState.classes[classId];
+      const curUser = appState.students.find(s => s.id === appState.currentUser);
+
+      if (!curUser) {
+        alert("Vui lòng chọn vai trò là một Học viên để thao tác đặt lịch.");
+        return;
+      }
+
+      // 1. Kiểm tra quyền Level (BR-11)
+      if (cls.level === 'Advanced' && curUser.level === 'Basic') {
+        alert("⚠️ Rất tiếc, bạn đang ở trình độ Basic. Lớp này chỉ dành riêng cho học viên Advanced (trên 7-8 tháng).");
+        return;
+      }
+
+      // 2. Kiểm tra sĩ số (BR-08)
+      const currentCapacity = appState.rainMode && cls.shift === 'Tối' ? 8 : cls.max;
+      if (cls.bookings.length >= currentCapacity) {
+        alert("⚠️ Ca học này đã đủ sĩ số tối đa. Vui lòng chọn ca khác.");
+        return;
+      }
+
+      // 3. Kiểm tra trùng giờ trong cùng ngày (BR-13)
+      const dayClasses = Object.values(appState.classes).filter(c => c.day === cls.day && c.shift === cls.shift);
+      const isAlreadyBookedSameShift = dayClasses.some(c => c.bookings.includes(curUser.id));
+      if (isAlreadyBookedSameShift) {
+        alert(`⚠️ Bạn đã có lịch học trong ca ${cls.shift} ${cls.day} rồi! Mỗi học viên không được đặt 2 lớp trùng khung giờ.`);
+        return;
+      }
+
+      // Thực hiện đặt chỗ
+      cls.bookings.push(curUser.id);
+      saveState();
+      renderAll();
+      showToast(`🎉 Đặt chỗ thành công ca ${cls.shift} ${cls.day}!`);
+    }
+
+    // HỦY CHỖ (Cancel logic)
+    function cancelBooking(classId) {
+      const cls = appState.classes[classId];
+      const curUser = appState.students.find(s => s.id === appState.currentUser);
+
+      if (!curUser) return;
+
+      if (confirm(`Bạn chắc chắn muốn hủy lịch tập ca ${cls.shift} ${cls.day}?`)) {
+        cls.bookings = cls.bookings.filter(id => id !== curUser.id);
+        saveState();
+        renderAll();
+        showToast(`Đã hủy đặt chỗ ca ${cls.shift} ${cls.day}.`);
+      }
+    }
+
+    // DUYỆT NÂNG/HẠ LEVEL CHO HỌC VIÊN (Admin)
+    function toggleStudentLevel(studentId) {
+      const st = appState.students.find(s => s.id === studentId);
+      if (!st) return;
+
+      const newLevel = st.level === 'Basic' ? 'Advanced' : 'Basic';
+      
+      // Nếu hạ từ Advanced xuống Basic: Tự động hủy các ca Advanced đã đặt (EC-05)
+      if (newLevel === 'Basic') {
+        Object.values(appState.classes).forEach(cls => {
+          if (cls.level === 'Advanced' && cls.bookings.includes(st.id)) {
+            cls.bookings = cls.bookings.filter(id => id !== st.id);
+          }
+        });
+      }
+
+      st.level = newLevel;
+      saveState();
+      renderAll();
+      showToast(`Đã chuyển cấp độ học viên ${st.name} sang: ${newLevel}`);
+    }
+
+    // RENDER GIAO DIỆN CHÍNH
+    function renderAll() {
+      const isStudent = appState.currentUser !== 'admin';
+      const curUser = appState.students.find(s => s.id === appState.currentUser);
+
+      // Cập nhật Selector
+      document.getElementById('userSelector').value = appState.currentUser;
+
+      // Banner học viên vs Admin
+      if (isStudent && curUser) {
+        document.getElementById('studentBanner').classList.remove('hidden');
+        document.getElementById('adminBanner').classList.add('hidden');
+        document.getElementById('tabBtnStudents').classList.add('hidden');
+
+        document.getElementById('userName').innerText = curUser.name;
+        document.getElementById('userAvatar').innerText = curUser.avatar;
+        document.getElementById('userBadge').innerText = curUser.level;
+        document.getElementById('userBadge').className = curUser.level === 'Advanced' 
+          ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800" 
+          : "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+        
+        document.getElementById('userDesc').innerText = `Thời gian tập: ${curUser.duration} · Quyền: ${curUser.level === 'Advanced' ? 'Được đặt cả lớp Basic & Advanced' : 'Chỉ đặt được lớp Basic'}`;
+      } else {
+        document.getElementById('studentBanner').classList.add('hidden');
+        document.getElementById('adminBanner').classList.remove('hidden');
+        document.getElementById('tabBtnStudents').classList.remove('hidden');
+      }
+
+      // Cảnh báo thời tiết
+      const weatherBox = document.getElementById('weatherAlertBox');
+      const btnWeather = document.getElementById('btnWeather');
+      if (appState.rainMode) {
+        weatherBox.classList.remove('hidden');
+        btnWeather.classList.add('bg-amber-500', 'text-slate-900');
+        btnWeather.innerHTML = "<span>☀️</span> Đang Mưa (Bấm để Tắt Mưa)";
+      } else {
+        weatherBox.classList.add('hidden');
+        btnWeather.classList.remove('bg-amber-500', 'text-slate-900');
+        btnWeather.innerHTML = "<span>🌧️</span> Mô phỏng Mưa Sân Thượng";
+      }
+
+      // Đếm số ca của tôi
+      let myTotalBookings = 0;
+      if (isStudent && curUser) {
+        myTotalBookings = Object.values(appState.classes).filter(c => c.bookings.includes(curUser.id)).length;
+      }
+      document.getElementById('myBookingsCount').innerText = `${myTotalBookings} ca`;
+      document.getElementById('tabCount').innerText = myTotalBookings;
+
+      // Render Ma trận lịch tuần
+      renderMatrix();
+
+      // Render Lịch của tôi
+      renderMySchedule();
+
+      // Render Danh sách học viên Admin
+      renderAdminStudents();
+    }
+
+    // Render Ma trận lịch tuần (Table)
+    function renderMatrix() {
+      const tbody = document.getElementById('matrixTableBody');
+      const days = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"];
+      const shifts = [
+        { name: "Sáng", time: "08:00 - 10:00", key: "morning" },
+        { name: "Chiều", time: "17:00 - 19:00", key: "afternoon" },
+        { name: "Tối", time: "19:30 - 21:00", key: "night" }
+      ];
+
+      let html = '';
+
+      shifts.forEach((shiftInfo) => {
+        html += `<tr class="border-b border-slate-100 hover:bg-slate-50/50">`;
+        html += `
+          <td class="p-3 text-center bg-slate-50/90 border-r border-slate-100 font-medium">
+            <span class="block font-bold text-slate-800 text-xs">${shiftInfo.name}</span>
+            <span class="text-[11px] text-slate-400 block">${shiftInfo.time}</span>
+          </td>
+        `;
+
+        days.forEach((dayName) => {
+          html += `<td class="p-2.5 align-top border-r border-slate-100/60">`;
+
+          // Xử lý riêng Tối Thứ 2 (2 lớp song song)
+          if (dayName === "Thứ 2" && shiftInfo.key === "night") {
+            const clsBasic = appState.classes["mon_night_basic"];
+            const clsAdv = appState.classes["mon_night_adv"];
+            html += `<div class="space-y-2">`;
+            html += renderClassCard(clsBasic);
+            html += renderClassCard(clsAdv);
+            html += `</div>`;
+          } else {
+            // Các ca thông thường
+            const classObj = Object.values(appState.classes).find(c => c.day === dayName && c.shift === shiftInfo.name);
+            if (classObj) {
+              html += renderClassCard(classObj);
+            }
+          }
+
+          html += `</td>`;
+        });
+
+        html += `</tr>`;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    // Render từng thẻ lớp học trong bảng
+    function renderClassCard(cls) {
+      const isStudent = appState.currentUser !== 'admin';
+      const curUser = appState.students.find(s => s.id === appState.currentUser);
+
+      const capacity = (appState.rainMode && cls.shift === 'Tối') ? 8 : cls.max;
+      const count = cls.bookings.length;
+      const isFull = count >= capacity;
+      const isBookedByMe = isStudent && curUser && cls.bookings.includes(curUser.id);
+      
+      // Kiểm tra xem user Basic có bị khóa lớp Advanced không
+      const isLockedForMe = isStudent && curUser && curUser.level === 'Basic' && cls.level === 'Advanced';
+
+      const isAdv = cls.level === 'Advanced';
+      const badgeColor = isAdv ? 'bg-purple-100 text-purple-800 border-purple-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      const borderColor = isBookedByMe ? 'border-blue-500 ring-2 ring-blue-100 bg-blue-50/40' : (isLockedForMe ? 'opacity-50 bg-slate-50 border-slate-200' : 'border-slate-200 bg-white hover:border-slate-300');
+
+      return `
+        <div class="rounded-lg p-2.5 border text-xs shadow-xs transition ${borderColor} relative">
+          <!-- Hàng trên: Badge Level & Sĩ số -->
+          <div class="flex items-center justify-between gap-1 mb-1.5">
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">
+              ${cls.level}
+            </span>
+            <span class="text-[11px] font-semibold ${isFull ? 'text-rose-600 font-bold' : 'text-slate-600'}">
+              ${isFull ? 'Đã đầy' : `${count}/${capacity}`}
+            </span>
+          </div>
+
+          <!-- Thông tin địa điểm & Giáo viên -->
+          <div class="text-[11px] text-slate-500 mb-2 leading-tight">
+            <div>📍 ${appState.rainMode && cls.shift === 'Tối' ? '<span class="text-amber-600 font-semibold">Chuyển trong nhà</span>' : cls.location}</div>
+            <div class="text-slate-400 mt-0.5">👤 ${cls.teacher}</div>
+          </div>
+
+          <!-- Thao tác tùy theo vai trò -->
+          ${isStudent ? `
+            ${isBookedByMe ? `
+              <button onclick="cancelBooking('${cls.id}')" class="w-full py-1 px-2 rounded bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 font-semibold text-[11px] flex items-center justify-center gap-1 transition">
+                <span>✓ Đã đặt</span> · <span class="underline">Hủy</span>
+              </button>
+            ` : isLockedForMe ? `
+              <div class="w-full py-1 text-center text-[10px] text-slate-400 bg-slate-100 rounded font-medium cursor-not-allowed">
+                Chỉ dành cho Advanced
+              </div>
+            ` : isFull ? `
+              <button disabled class="w-full py-1 text-center text-[11px] text-slate-400 bg-slate-100 rounded font-medium cursor-not-allowed">
+                Đã đủ sĩ số
+              </button>
+            ` : `
+              <button onclick="bookClass('${cls.id}')" class="w-full py-1 px-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] shadow-xs transition">
+                Đặt chỗ
+              </button>
+            `}
+          ` : `
+            <!-- Vai trò Admin: Bấm xem danh sách học viên -->
+            <button onclick="openClassModal('${cls.id}')" class="w-full py-1 px-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px] border border-slate-200 transition">
+              Xem danh sách (${count})
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    // Render Tab Lịch của tôi
+    function renderMySchedule() {
+      const container = document.getElementById('myScheduleList');
+      const curUser = appState.students.find(s => s.id === appState.currentUser);
+
+      if (!curUser) {
+        container.innerHTML = `<p class="text-sm text-slate-400 py-4 text-center">Bạn đang ở vai trò Admin (không có lịch học cá nhân).</p>`;
+        return;
+      }
+
+      const myClasses = Object.values(appState.classes).filter(c => c.bookings.includes(curUser.id));
+
+      if (myClasses.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-400 text-xs">
+            <span class="text-3xl block mb-2">📅</span>
+            Bạn chưa đặt ca học nào trong tuần này.<br>
+            <button onclick="switchTab('matrix')" class="text-blue-600 font-semibold underline mt-2">Bấm vào đây để xem lịch và đặt chỗ →</button>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      myClasses.forEach(cls => {
+        html += `
+          <div class="flex items-center justify-between p-3.5 rounded-lg border border-blue-200 bg-blue-50/30 text-xs">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">🥋</span>
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm">${cls.day} · Ca ${cls.shift} (${cls.time})</h4>
+                <p class="text-slate-500 mt-0.5">Trình độ: <strong>${cls.level}</strong> · Địa điểm: ${cls.location} · Giáo viên: ${cls.teacher}</p>
+              </div>
+            </div>
+            <button onclick="cancelBooking('${cls.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 font-semibold text-xs transition">
+              Hủy đặt chỗ
+            </button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // Render Quản lý học viên (Admin)
+    function renderAdminStudents() {
+      const tbody = document.getElementById('studentTableBody');
+      let html = '';
+
+      appState.students.forEach(st => {
+        const isEligibleForUpgrade = st.level === 'Basic' && (st.duration.includes('8 tháng') || st.duration.includes('10 tháng') || st.duration.includes('12 tháng'));
+
+        html += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2.5 font-bold text-slate-900">${st.name}</td>
+            <td class="p-2.5 text-slate-500">${st.startMonth}</td>
+            <td class="p-2.5 font-semibold text-slate-700">${st.duration}</td>
+            <td class="p-2.5">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold ${st.level === 'Advanced' ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800'}">
+                ${st.level}
+              </span>
+              ${isEligibleForUpgrade ? '<span class="text-[10px] text-amber-600 font-bold block mt-0.5">⚠️ Đủ điều kiện lên Advanced</span>' : ''}
+            </td>
+            <td class="p-2.5 text-center">
+              <button onclick="toggleStudentLevel('${st.id}')" class="px-3 py-1 rounded text-[11px] font-semibold transition ${st.level === 'Basic' ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'}">
+                ${st.level === 'Basic' ? 'Duyệt lên Advanced' : 'Hạ về Basic'}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    // Modal xem danh sách học viên
+    function openClassModal(classId) {
+      const cls = appState.classes[classId];
+      const capacity = (appState.rainMode && cls.shift === 'Tối') ? 8 : cls.max;
+
+      document.getElementById('modalClassTitle').innerText = `${cls.day} - Ca ${cls.shift} (${cls.level})`;
+      document.getElementById('modalClassSub').innerText = `Giờ: ${cls.time} · Địa điểm: ${cls.location} · Giáo viên: ${cls.teacher}`;
+      document.getElementById('modalStudentCount').innerText = cls.bookings.length;
+      document.getElementById('modalCapacityBadge').innerText = `Sức chứa: ${cls.bookings.length}/${capacity}`;
+
+      const listDiv = document.getElementById('modalStudentList');
+      if (cls.bookings.length === 0) {
+        listDiv.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Chưa có học viên nào đặt chỗ ca này.</p>`;
+      } else {
+        let html = '';
+        cls.bookings.forEach((stId, idx) => {
+          const st = appState.students.find(s => s.id === stId) || { name: "Học viên", level: "Basic", duration: "" };
+          html += `
+            <div class="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px] font-bold">${idx + 1}</span>
+                <span class="font-semibold text-slate-800">${st.name}</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded ${st.level === 'Advanced' ? 'bg-purple-100 text-purple-700 font-bold' : 'bg-emerald-100 text-emerald-700 font-bold'}">${st.level}</span>
+              </div>
+              <span class="text-slate-400 text-[11px]">${st.duration}</span>
+            </div>
+          `;
+        });
+        listDiv.innerHTML = html;
+      }
+
+      document.getElementById('classModal').classList.remove('hidden');
+    }
+
+    function closeClassModal() {
+      document.getElementById('classModal').classList.add('hidden');
+    }
+
+    // Hiển thị Toast thông báo
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2400);
+    }
+
+    // Khởi chạy khi load trang
+    window.onload = function() {
+      renderAll();
+    };
+  </script>
+</body>
+</html>
